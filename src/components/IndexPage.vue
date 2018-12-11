@@ -1,20 +1,16 @@
 <template lang="pug">
 <div>
-    
-          
-
+    <svg>
+    </svg>
     <div class="container" id="button1">
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-           <span class="input-group-text" id="basic-addon1">#</span>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">#</span>
+            </div>
+            <input type="text" class="form-control" v-model="input_val" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+            <button class="btn btn-primary" v-on:click="getData()">Get connections</button>
         </div>
-        <input type="text" class="form-control" v-model="input_val" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-        <button class="btn btn-primary" v-on:click="getData()">Get connections</button>
     </div>
-    
-    </div>
-    
-
     <div class="container" id="table1">
     table.table.table-striped
         thead.thead-dark
@@ -99,14 +95,15 @@ var treeData =
   };
 
 // Set the dimensions and margins of the diagram
-var margin = {top: 20, right: 90, bottom: 30, left: 90},
+var margin = {top: 20, right: 90, bottom: 30, left: 300},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 700 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-var svg = d3.select("body").append("svg")
+//var svg = d3.select("body").append("svg")
+var svg = d3.select("svg")
     .attr("width", width + margin.right + margin.left)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -140,10 +137,13 @@ function collapse(d) {
   }
 }
 
+
 function update(source) {
 
   // Assigns the x and y position for the nodes
-  var treeData = treemap(root);
+  //var treeData = treemap(root);
+    var treeData = treemap(root);
+
 
   // Compute the new tree layout.
   var nodes = treeData.descendants(),
@@ -181,7 +181,7 @@ function update(source) {
           return d.children || d._children ? -13 : 13;
       })
       .attr("text-anchor", function(d) {
-          return d.children || d._children ? "start" : "end";
+          return d.children || d._children ? "end" : "start";
       })
       .text(function(d) { return d.data.name; });
 
@@ -278,12 +278,17 @@ function update(source) {
       } else {
         d.children = d._children;
         if (d._children == null)     {
-            var childs = [{ "name": "Son of A" },
-          { "name": "Daughter of A" }]
-            childs.forEach(node => {addN(d,node.name)})
-            
-            //update(d)
-             
+            var childs = [{ "name": d.id + " "+ d.x +" "+ d.y + " " +d.x0 +" " +d.y0},
+          { "name": d.id + " "+ d.x +" "+ d.y + " " +d.x0 +" " +d.y0}]
+          //var childs = this.tree.children
+          childs.forEach(node => {addN(d,node.name)})
+          
+        
+
+            var a = d3.select(this)
+            a.select('text')
+              .attr("text-anchor","end")
+              .attr("x", -13 )
              }
 
         d._children = null;
@@ -294,7 +299,7 @@ function addN(selected, name){
 var newNode = {
     type: 'node-type',
     name: name,
-    children: []
+    children: [],
   };
   //Creates a Node from newNode object using d3.hierarchy(.)
   var newNode = d3.hierarchy(newNode);
@@ -304,6 +309,10 @@ var newNode = {
   newNode.height = selected.height - 1;
   newNode.parent = selected; 
   newNode.id = name;
+  newNode.x0 = selected.x;
+  newNode.y0 = selected.y;
+  //newNode.x = selected.x;
+  //newNode.y = selected.y;
 
   //Selected is a node, to which we are adding the new node as a child
   //If no child array, create an empty array
@@ -315,9 +324,11 @@ var newNode = {
   //Push it to parent.children array  
   selected.children.push(newNode);
   selected.data.children.push(newNode.data);
+  
 
-  //Update tree
-  update(selected);}
+  //update(selected);
+  }
+
 
 
 }
@@ -377,7 +388,7 @@ align-self: center;
   fill: none;
   
   stroke: #555;
-stroke-opacity: 0.4;
+stroke-opacity: 0.1;
   stroke-width: 1.5px;
 }
 
