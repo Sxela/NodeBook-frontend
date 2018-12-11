@@ -4,9 +4,7 @@ import Vue from 'vue'
 import index from './components/IndexPage'
 import router from './router'
 import 'bootstrap/dist/css/bootstrap.css'
-import Chart from 'v-chart-plugin'
 
-Vue.use(Chart);
 
 Vue.config.productionTip = false
 
