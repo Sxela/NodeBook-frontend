@@ -11,9 +11,8 @@
             <button class="btn btn-primary" v-on:click="getData()">Get connections</button>
         </div>
     <div>
-    
-    <p>Address {{total_out[0]._id}} has {{total_out[0].links}} outgoing links with a total value of {{total_out[0].value/1000000000000000000}} ETH</p>
-    <span>Address {{total_out[0]._id}} has {{total_out[0].links}} outgoing links with a total value of {{total_out[0].value/1000000000000000000}} ETH</span>
+  
+    <span>Address {{total_out[0]._id}} has {{total_out[0].links}} outgoing links with a total value of {{Math.round(total_out[0].value/1000000000000000000*100)/100}} ETH</span>
     </div>
     </div>
     <div class="container" id="table1">
@@ -28,7 +27,7 @@
             
               td {{ tx._id }}
               td {{ tx.Txes }}
-              td {{ tx.value/1000000000000000000 }}
+              td {{ Math.round(tx.value/1000000000000000000*100)/100 }}
               td
         thead.thead-dark     
             tr
@@ -39,7 +38,7 @@
             tr( v-for="tx in txes.tx_in")
               td {{ tx._id }}
               td {{ tx.Txes }}
-              td {{ tx.value/1000000000000000000 }}
+              td {{ Math.round(tx.value/1000000000000000000*100)/100 }}
               td
         
     </div>
@@ -89,7 +88,7 @@ export default {
     var  margin = ({top: 50, right: 300, bottom: 50, left: 450})
     var dx = 10
     var dy = 10
-    var dy = 360
+    var dy = 380
 
     function diagonal(s, d) {
 
@@ -104,7 +103,7 @@ export default {
     var diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x)
     var tree = d3.tree().nodeSize([dx, dy])
  
-    async function addN(selected, _id, item){
+    async function addN(selected, item){
       var newNode = {
         _id: item._id,
         children: [],
@@ -160,7 +159,7 @@ export default {
   
   //add each linked address as a child node
   nodedata.tx_out.forEach(async item =>  {
-    await addN(root, item._id)
+    await addN(root, item)
   })
 
     root.x0 = dy / 2;
@@ -248,7 +247,7 @@ export default {
                       .attr("fill", 'gray')
                   if (d._children == null && d.children == null){
                   d.data.children.forEach(item => {  
-                      {addN(d,item._id,item)}
+                      {addN(d,item)}
                       console.log(item)
                   })
 
@@ -286,7 +285,7 @@ export default {
           .attr("class", "tx_out")
           .attr("dy", "0.31em")
           .attr("text-anchor", d => d.id==0 ? "start" : "end")
-          .attr("x", d => d.id==0 ? '6' : '280')
+          .attr("x", d => d.id==0 ? '6' : '285')
 
           .text(d => d.data.tx_out ? `${d.data.tx_out}>` : '')
         .clone(true).lower()
