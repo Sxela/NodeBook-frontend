@@ -88,7 +88,7 @@ export default {
     var  margin = ({top: 50, right: 300, bottom: 50, left: 450})
     var dx = 10
     var dy = 10
-    var dy = 380
+    var dy = 280
 
     function diagonal(s, d) {
 
@@ -122,8 +122,10 @@ export default {
       if (nodedata1.total_out[0] != null) 
         {
           newNode.data.tx_out = nodedata1.total_out[0].links,
-          newNode.data.value_out = nodedata1.total_out[0].value
+          newNode.data.value_out = nodedata1.total_out[0].value  
         }
+      if (nodedata1.aliases[0] != null){newNode.data.alias = nodedata1.aliases[0].tokenName}
+      //console.log(nodedata1.aliases[0].tokenName)
       newNode.data.children = nodedata1.tx_out
       newNode.data.tx_in = item.Txes;
       newNode.data.value_in = item.value;
@@ -135,9 +137,22 @@ export default {
         selected.data.children = [];
       }
       //Push it to parent.children array  
+     // await root.descendants().forEach(d => {
+     //   if (d.data._id == item._id) {
+            //d.parent.push(selected); 
+     //       selected.children.push(d);
+     //       selected.data.children.push(d.data);
+            
+     //   }
+     //  else {
       selected.children.push(newNode);
       selected.data.children.push(newNode.data);
+     // }})
       selected._children = selected.children;
+       root.descendants().forEach((d, i) => {
+      d.id = i;
+    });
+
       update(selected)
     }
 
@@ -146,7 +161,8 @@ export default {
  
   var newNode = {
     _id: address,
-    children: []
+    children: [],
+    alias: ''
   }
 
   var root = d3.hierarchy(newNode)
@@ -156,10 +172,11 @@ export default {
           root.data.value_out = nodedata.total_out[0].value
         }
       root.data.children = nodedata.tx_out
-  
+  if (nodedata.aliases[0] != null){root.data.alias = nodedata.aliases[0].tokenName}
+
   //add each linked address as a child node
-  nodedata.tx_out.forEach(async item =>  {
-    await addN(root, item)
+  await nodedata.tx_out.forEach(async item =>  {
+     addN(root, item)
   })
 
     root.x0 = dy / 2;
@@ -248,15 +265,17 @@ export default {
                   if (d._children == null && d.children == null){
                   d.data.children.forEach(item => {  
                       {addN(d,item)}
+                      
+
                       console.log(item)
                   })
 
-                    
-                    
-                    root.descendants().forEach((d, i) => {
-                                        d.id = i;})
+                   // root.descendants().forEach((d, i) => {
+                   //                    d.id = i;})
+                                       
                   }
-                  d._children = null;              
+                  d._children = null;
+
               }
               update(d);
             } 
@@ -275,7 +294,11 @@ export default {
           .attr("dy", "0.31em")
           .attr("x", d => d.id==0 ? '-5' : '5')
           .attr("text-anchor", d => d.id==0 ? "end" : "start")
-          .text(d => d.data._id)
+          .text(d => 
+          {
+            if (d.data.alias != null){ return d.data.alias} else 
+          { return `[${d.data._id.substr(0,7)}..${d.data._id.substr(-7,7)}]`}
+          })
         .clone(true).lower()
           .attr("stroke-linejoin", "round")
           .attr("stroke-width", 5)
@@ -285,7 +308,7 @@ export default {
           .attr("class", "tx_out")
           .attr("dy", "0.31em")
           .attr("text-anchor", d => d.id==0 ? "start" : "end")
-          .attr("x", d => d.id==0 ? '6' : '285')
+          .attr("x", d => d.id==0 ? '6' : '135')
 
           .text(d => d.data.tx_out ? `${d.data.tx_out}>` : '')
         .clone(true).lower()
