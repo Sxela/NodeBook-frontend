@@ -8,7 +8,7 @@
             <span class="input-group-text" id="basic-addon1">#</span>
             </div>
             <input type="text" class="form-control" v-model="input_val" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-            <button class="btn btn-primary" v-on:click="getData()">Get connections</button>
+            <button class="btn btn-primary" v-on:click="update()">Get connections</button>
         </div>
     <div>
   
@@ -68,7 +68,19 @@ export default {
             
         }
     },
-    methods: {      
+    methods: { 
+      
+    update() {
+      d3.selectAll('svg').selectAll("g").remove()
+      //d3.selectAll("g")
+      //  .data()
+      //  .exit()
+      //  .remove()
+      //d3.select('body').select('svg').exit().remove()
+      this.getData()
+      this.makeTree(this.input_val)
+    }, 
+
     async getData () {
         this.tree.name = this.input_val;
         const response = await dataService.fetchData('out',this.input_val)
@@ -77,7 +89,8 @@ export default {
             this.tree.children.push({"name": item._id})
             })
         this.total_out = this.txes.total_out
-        },
+        },  
+
     async makeTree (address) {
 
     async function getData(address)  {
@@ -161,8 +174,7 @@ export default {
  
   var newNode = {
     _id: address,
-    children: [],
-    alias: ''
+    children: []
   }
 
   var root = d3.hierarchy(newNode)
