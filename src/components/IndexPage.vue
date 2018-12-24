@@ -42,7 +42,7 @@
               td
         
     </div>
-    <span v-text="test"></span>
+    
 </div>
 </template>
 <script>
@@ -72,11 +72,7 @@ export default {
       
     update() {
       d3.selectAll('svg').selectAll("g").remove()
-      //d3.selectAll("g")
-      //  .data()
-      //  .exit()
-      //  .remove()
-      //d3.select('body').select('svg').exit().remove()
+
       this.getData()
       this.makeTree(this.input_val)
     }, 
@@ -100,21 +96,12 @@ export default {
     
     var  margin = ({top: 50, right: 300, bottom: 50, left: 450})
     var dx = 10
-    var dy = 10
     var dy = 280
-
-    function diagonal(s, d) {
-
-      var path = `M ${s.y} ${s.x}
-              C ${(s.y + d.y) / 2} ${s.x},
-                ${(s.y + d.y) / 2} ${d.x},
-                ${d.y} ${d.x}`
-
-      return path
-    }
     
     var diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x)
+    var vertical = d3.linkVertical().x(d => d.y).y(d => d.x)
     var tree = d3.tree().nodeSize([dx, dy])
+    
  
     async function addN(selected, item){
       var newNode = {
@@ -131,14 +118,14 @@ export default {
       newNode.parent = selected; 
       
       const nodedata1 =  await getData(newNode.data._id)
-      //console.log(nodedata1)
+
       if (nodedata1.total_out[0] != null) 
         {
           newNode.data.tx_out = nodedata1.total_out[0].links,
           newNode.data.value_out = nodedata1.total_out[0].value  
         }
       if (nodedata1.aliases[0] != null){newNode.data.alias = nodedata1.aliases[0].tokenName}
-      //console.log(nodedata1.aliases[0].tokenName)
+
       newNode.data.children = nodedata1.tx_out
       newNode.data.tx_in = item.Txes;
       newNode.data.value_in = item.value;
@@ -149,22 +136,15 @@ export default {
         selected.children = [];
         selected.data.children = [];
       }
-      //Push it to parent.children array  
-     // await root.descendants().forEach(d => {
-     //   if (d.data._id == item._id) {
-            //d.parent.push(selected); 
-     //       selected.children.push(d);
-     //       selected.data.children.push(d.data);
-            
-     //   }
-     //  else {
+
       selected.children.push(newNode);
       selected.data.children.push(newNode.data);
-     // }})
+
       selected._children = selected.children;
        root.descendants().forEach((d, i) => {
-      d.id = i;
-    });
+      d.id = i
+      ;selected._children = selected.children;
+      });
 
       update(selected)
     }
@@ -198,104 +178,158 @@ export default {
       d.id = i;
     });
 
-    const svg = d3.select("svg")
-        .attr("width", dy)
-        .attr("height", dx)
-        .attr("viewBox", [-margin.left, -margin.top, dy, dx])
+    //pan+ zoom------------------------------------------------------------------------------
+      var width = document.body.clientWidth
+      var height = document.body.clientHeight/2
+      var zoom = d3.zoom()
+          .on("zoom", zoomFunction);
+
+      function zoomFunction(){ 
+        let x = d3.event.transform.x + width/4
+        let y = d3.event.transform.y + height/4
+        let k = d3.event.transform.k
+        svg.attr("transform", 'translate('+x+','+ y +') scale('+k+','+k+')')  
+
+      };
+
+      const svgView = d3.select("svg")
+        .attr("width", width)
+        .attr("height", height)
         .style("font", "10px courier")
-        .style("user-select", "none");
+        .style("user-select", "none")
+
+      var innerSpace = svgView.append("g")
+          .attr("class", "inner_space")
+
+      const svg = innerSpace.append("g")
+          .attr("class", "graph")
+
+      var view = innerSpace.append("rect").lower()
+          .attr("class", "zoom")
+          .attr("width", width)
+          .attr("height", height)
+          .call(zoom)
+
+      var mypath = svg.append("path")
+          .attr("id", 'p')
+          .attr('fill', 'red')
+          .attr("d", diagonal({source: {x: 0, y: 0}, target: {x: 200, y: 200}}))
+      svg.attr("transform", `translate(${width/4},${height/4})`)
+      
+     //pan+zoom ------------------------------------------------------------------------
+    
 
     const gLink = svg.append("g")
         .attr("fill", "none")
         .attr("stroke", "#555")
         .attr("stroke-opacity", 0.4)
-        .attr("stroke-width", 1.5);
+        .attr("stroke-width", 1.5)
+
+    const gdupLink = svg.append("g")
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("stroke-opacity", 0.6)
+        .attr("stroke-width", 1.0)
+
 
     const gNode = svg.append("g")
-        .attr("cursor", "pointer");
+        .attr("cursor", "pointer")
 
-
+    
+    
+    
 
     //main function    
 
     function update(source) {
       const duration = d3.event && d3.event.altKey ? 2500 : 250;
       const nodes = root.descendants().reverse();
-      const links = root.links();
-
+      var links = [];
+      var duplinks = [];
+      root.descendants().forEach((d,i) =>{
+        if(d.children) { 
+          d.children.forEach(dd => links.push({source: d, target: dd}))
+        }  
+        if(d.dupes) {     
+          d.dupes.forEach(dd => duplinks.push({source: d, target: dd}))
+        }
+      })
+      console.log(duplinks)
       // Compute the new tree layout.
       tree(root);
-      
-      let left = root;
-      let right = root;
-      root.eachBefore(node => {
-        if (node.x < left.x) left = node;
-        if (node.x > right.x) right = node;
-      });
 
-      const height = right.x - left.x + margin.top + margin.bottom;
-
-      let top = root;
-      let bottom = root;
-      root.eachBefore(node => {
-        if (node.y < top.y) top = node;
-        if (node.y > bottom.y) bottom = node;
-      });
-      
-      const width = bottom.y - top.y + margin.left + margin.right;
 
       const transition = svg.transition()
           .duration(duration)
-          .attr("height", height)
-          .attr("width", width)
-          .attr("viewBox", [-margin.left, left.x - margin.top, width, height])
-          .tween("resize", window.ResizeObserver ? null : () => () => svg.dispatch("toggle"));
+
 
       // Update the nodes…
       const node = gNode.selectAll("g")
         .data(nodes, d => d.id);
+      
+      
+//taking address as an argument, looking through all the tree data for duplicates. when duplicate found, return it 
+      async function dupe(_id) {
+        let result = 0;
+                        await root.descendants().forEach(s=>{
+                          if (_id == s.data._id) {
+                            console.log('dupe' +s.data._id)
+                            result = s;
+                          }   
+                        }) 
+        return result
+      } 
+
+      async function onClick(d) {
+              console.log(d)
+            if (d.data.tx_out) { //if no outcoming txes, unclickable
+              if (d.children || d.dupes) {
+                  d._children = d.children; d._dupes = d.dupes;
+                  d.children = null; d.dupes = null;
+
+                  var a = d3.select(this)
+                    a.selectAll('circle')
+                      .attr("fill", 'orange')
+                } 
+              else {
+                  d.children = d._children; d.dupes = d._dupes;
+
+                  var a = d3.select(this)
+                    a.selectAll('circle')
+                      .attr("fill", 'gray')
+
+                  if (d._children == null && d.children == null && d.dupes == null && d._dupes == null){
+                    d.data.children.forEach(async item =>  {
+
+                      let dupe1 = await dupe(item._id)
+                      console.log(dupe1)
+                      if (dupe1!=0) 
+                      {
+                        if (!d.dupes) d.dupes = [];
+                        d.dupes.push(dupe1)
+                        update(d)
+                      }
+                      else 
+                      {addN(d,item)}
+                    })                 
+                  }
+                  d._children = null; d._dupes = null
+
+               }
+              update(d);
+            } 
+        
+      
+        }
 
       // Enter any new nodes at the parent's previous position.
       const nodeEnter = node.enter().append("g")
           .attr("transform", d => `translate(${source.y0},${source.x0})`)
           .attr("fill-opacity", 0)
           .attr("stroke-opacity", 0)
-          .on("click", async function (d) {
-              console.log(d)
-            if (d.data.tx_out) { //if no outcoming txes, unclickable
-              if (d.children) {
-                  d._children = d.children;
-                  d.children = null;
-                  var a = d3.select(this)
-                    a.selectAll('circle')
-                      .attr("fill", 'orange')
-                } else {
-                  d.children = d._children;
-                  var a = d3.select(this)
-                    a.selectAll('circle')
-                      .attr("fill", 'gray')
-                  if (d._children == null && d.children == null){
-                  d.data.children.forEach(item => {  
-                      {addN(d,item)}
-                      
+          .on("click", d => onClick(d));
 
-                      console.log(item)
-                  })
-
-                   // root.descendants().forEach((d, i) => {
-                   //                    d.id = i;})
-                                       
-                  }
-                  d._children = null;
-
-              }
-              update(d);
-            } 
-        
       
-          });
-
-    
 
       nodeEnter.append("circle")
           .attr("r", 2.5)
@@ -350,12 +384,15 @@ export default {
           .attr("stroke-width", 5)
           .attr("stroke", "white")
 
+      
 
       // Transition nodes to their new position.
       const nodeUpdate = node.merge(nodeEnter).transition(transition)
           .attr("transform", d => `translate(${d.y},${d.x})`)
           .attr("fill-opacity", 1)
           .attr("stroke-opacity", 1);
+
+      
 
       // Transition exiting nodes to the parent's new position.
       const nodeExit = node.exit().transition(transition).remove()
@@ -366,24 +403,58 @@ export default {
       // Update the links…
       const link = gLink.selectAll("path")
         .data(links, d => d.target.id)
-      // .attr("stroke-width", d => d.target.id+1)
 
       // Enter any new links at the parent's previous position.
       const linkEnter = link.enter().append("path")
           .attr("d", d => {
-            const o = {x: source.x0, y: source.y0};
-            return diagonal({source: o, target: o});
+            const o = {x: (source.x0), y: source.y0+50};
+            return diagonal({source: o, target: o}); 
           });
+      
 
       // Transition links to their new position.
       link.merge(linkEnter).transition(transition)
-          .attr("d", diagonal);
+          .attr("d", d=> {
+            let y2 = 0;
+            if (d.source.x == 0 && d.source.y ==0) {y2 = d.source.y;} else {y2 = d.source.y+120;}
+            
+            return diagonal({source: {x:d.source.x,y:y2}, target: {x:d.target.x,y:d.target.y}})});
+
+      
 
       // Transition exiting nodes to the parent's new position.
       link.exit().transition(transition).remove()
           .attr("d", d => {
-            const o = {x: source.x, y: source.y};
+            const o = {x: (source.x), y: source.y};
             return diagonal({source: o, target: o});
+          });
+
+
+      // Update the links…
+      const duplink = gdupLink.selectAll("path")
+        .data(duplinks, d=> d.target.id)
+
+      // Enter any new links at the parent's previous position.
+      const duplinkEnter = duplink.enter().append("path")
+          .attr("d", d => {
+            const o = {x: source.x0, y: source.y0};
+            return vertical({source: o, target: o});
+          });
+
+      // Transition links to their new position.
+      duplink.merge(duplinkEnter).transition(transition)
+          .attr("d", d=> {
+            let y2 = 0;
+            if (d.source.x == 0 && d.source.y ==0) {y2 = d.source.y;} else {y2 = d.source.y+120;}
+            
+            return vertical({source: {x:d.source.x,y:y2}, target: {x:d.target.x,y:d.target.y}})});
+        
+
+      // Transition exiting nodes to the parent's new position.
+      duplink.exit().transition(transition).remove()
+          .attr("d", d => {
+            const o = {x: source.x, y: source.y};
+            return vertical({source: o, target: o});
           });
 
       // Stash the old positions for transition.
@@ -454,5 +525,15 @@ stroke-opacity: 0.1;
   stroke-width: 1.5px;
 }
 
+.zoom{
+  cursor: grab;
+  fill: none;
+  pointer-events: all;
+  
+}
 
+.graph {
+  margin-top: 120px;
+  margin-left: 200px;
+}
 </style>
