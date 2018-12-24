@@ -209,11 +209,7 @@ export default {
           .attr("width", width)
           .attr("height", height)
           .call(zoom)
-
-      var mypath = svg.append("path")
-          .attr("id", 'p')
-          .attr('fill', 'red')
-          .attr("d", diagonal({source: {x: 0, y: 0}, target: {x: 200, y: 200}}))
+          
       svg.attr("transform", `translate(${width/4},${height/4})`)
       
      //pan+zoom ------------------------------------------------------------------------
