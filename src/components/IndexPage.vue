@@ -225,7 +225,6 @@ export default {
           .attr("width", width)
           .attr("height", height)
           .call(zoom)
-
       
     svg.attr("transform", `translate(${width/4},${height/4})`)
       
