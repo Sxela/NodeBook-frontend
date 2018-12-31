@@ -93,15 +93,31 @@ export default {
       const response = await dataService.fetchData('out',address)
       return response.data 
     }
+
+    async function getData(address, block)  {
+      const response = await dataService.fetchData('out', address, block)
+      return response.data 
+    }
+
+    
     
     var  margin = ({top: 50, right: 300, bottom: 50, left: 450})
-    var dx = 10
+    var dx = 30 //10
     var dy = 280
+
+    function diagonal_old(s, d) {
+
+      var path = `M ${s.y} ${s.x}
+              C ${(s.y + d.y) / 2} ${s.x},
+                ${(s.y + d.y) / 2} ${d.x},
+                ${d.y} ${d.x}`
+
+      return path
+    }
     
     var diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x)
     var vertical = d3.linkVertical().x(d => d.y).y(d => d.x)
     var tree = d3.tree().nodeSize([dx, dy])
-    
  
     async function addN(selected, item){
       var newNode = {
@@ -117,18 +133,18 @@ export default {
       newNode.height = selected.height - 1;
       newNode.parent = selected; 
       
-      const nodedata1 =  await getData(newNode.data._id)
-
+      const nodedata1 =  await getData(newNode.data._id, item.firstBlock) //look for txes from given address and after given block (to make sure we look for descending txes only)
       if (nodedata1.total_out[0] != null) 
         {
           newNode.data.tx_out = nodedata1.total_out[0].links,
           newNode.data.value_out = nodedata1.total_out[0].value  
         }
       if (nodedata1.aliases[0] != null){newNode.data.alias = nodedata1.aliases[0].tokenName}
-
+      //console.log(nodedata1.aliases[0].tokenName)
       newNode.data.children = nodedata1.tx_out
       newNode.data.tx_in = item.Txes;
       newNode.data.value_in = item.value;
+      newNode.data.firstBlock = item.firstBlock; //adding the first incoming transaction block to look for outgoing transactions after this block
 
       //Selected is a node, to which we are adding the new node as a child
       //If no child array, create an empty array
@@ -178,13 +194,13 @@ export default {
       d.id = i;
     });
 
-    //pan+ zoom------------------------------------------------------------------------------
+    //pan & zoom------------------------------------------------------------------------------
       var width = document.body.clientWidth
       var height = document.body.clientHeight/2
       var zoom = d3.zoom()
           .on("zoom", zoomFunction);
 
-      function zoomFunction(){ 
+      function zoomFunction(){  
         let x = d3.event.transform.x + width/4
         let y = d3.event.transform.y + height/4
         let k = d3.event.transform.k
@@ -210,13 +226,10 @@ export default {
           .attr("height", height)
           .call(zoom)
 
-      var mypath = svg.append("path")
-          .attr("id", 'p')
-          .attr('fill', 'red')
-          .attr("d", diagonal({source: {x: 0, y: 0}, target: {x: 200, y: 200}}))
-      svg.attr("transform", `translate(${width/4},${height/4})`)
       
-     //pan+zoom ------------------------------------------------------------------------
+    svg.attr("transform", `translate(${width/4},${height/4})`)
+      
+     //pan & zoom------------------------------------------------------------------------
     
 
     const gLink = svg.append("g")
@@ -235,33 +248,30 @@ export default {
     const gNode = svg.append("g")
         .attr("cursor", "pointer")
 
-    
-    
-    
 
-    //main function    
+    //main function------------------------------------------------------------------------    
 
     function update(source) {
       const duration = d3.event && d3.event.altKey ? 2500 : 250;
       const nodes = root.descendants().reverse();
+      root.sort(function(a, b) { return b.data.value_in - a.data.value_in; }); //sort by incoming value
+      
       var links = [];
       var duplinks = [];
       root.descendants().forEach((d,i) =>{
-        if(d.children) { 
+        if(d.children) {
           d.children.forEach(dd => links.push({source: d, target: dd}))
         }  
-        if(d.dupes) {     
+        if(d.dupes) {
           d.dupes.forEach(dd => duplinks.push({source: d, target: dd}))
         }
       })
-      console.log(duplinks)
+
       // Compute the new tree layout.
       tree(root);
 
-
       const transition = svg.transition()
           .duration(duration)
-
 
       // Update the nodes…
       const node = gNode.selectAll("g")
@@ -269,11 +279,11 @@ export default {
       
       
 //taking address as an argument, looking through all the tree data for duplicates. when duplicate found, return it 
-      async function dupe(_id) {
+      async function dupe(item) {
         let result = 0;
                         await root.descendants().forEach(s=>{
-                          if (_id == s.data._id) {
-                            console.log('dupe' +s.data._id)
+                          if (item._id == s.data._id) {
+                            if (item.firstBlock < s.data.firstBlock) {s.data.firstBlock = item.firstBlock; update(s)}
                             result = s;
                           }   
                         }) 
@@ -301,11 +311,11 @@ export default {
                   if (d._children == null && d.children == null && d.dupes == null && d._dupes == null){
                     d.data.children.forEach(async item =>  {
 
-                      let dupe1 = await dupe(item._id)
-                      console.log(dupe1)
+                      let dupe1 = await dupe(item)
                       if (dupe1!=0) 
                       {
                         if (!d.dupes) d.dupes = [];
+                        
                         d.dupes.push(dupe1)
                         update(d)
                       }
@@ -384,15 +394,23 @@ export default {
           .attr("stroke-width", 5)
           .attr("stroke", "white")
 
-      
+      nodeEnter.append("text")
+          .attr("class", "tx_in")
+          .attr("dy", "0.31em")
+          .attr("text-anchor", d => d.id==0 ? "end" : "start")
+          .attr("x", d => d.id==0 ? '70' : '-70')
+          .attr("y", 10)
+          .text(d => d.id==0 ? '' : `${Math.round((d.data.value_in/d.parent.data.value_out)*10000)/100}%>`)
+        .clone(true).lower()
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-width", 5)
+          .attr("stroke", "white")
 
       // Transition nodes to their new position.
       const nodeUpdate = node.merge(nodeEnter).transition(transition)
           .attr("transform", d => `translate(${d.y},${d.x})`)
           .attr("fill-opacity", 1)
           .attr("stroke-opacity", 1);
-
-      
 
       // Transition exiting nodes to the parent's new position.
       const nodeExit = node.exit().transition(transition).remove()
@@ -403,7 +421,7 @@ export default {
       // Update the links…
       const link = gLink.selectAll("path")
         .data(links, d => d.target.id)
-
+      
       // Enter any new links at the parent's previous position.
       const linkEnter = link.enter().append("path")
           .attr("d", d => {
@@ -411,16 +429,12 @@ export default {
             return diagonal({source: o, target: o}); 
           });
       
-
       // Transition links to their new position.
       link.merge(linkEnter).transition(transition)
           .attr("d", d=> {
             let y2 = 0;
             if (d.source.x == 0 && d.source.y ==0) {y2 = d.source.y;} else {y2 = d.source.y+120;}
-            
             return diagonal({source: {x:d.source.x,y:y2}, target: {x:d.target.x,y:d.target.y}})});
-
-      
 
       // Transition exiting nodes to the parent's new position.
       link.exit().transition(transition).remove()

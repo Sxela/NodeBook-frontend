@@ -5,5 +5,10 @@ export default {
   },
   fetchData (prefix, params) {
     return api().get(`addresses/${prefix}/${params}`)
+  },
+  fetchData (prefix, address, block) {
+    if (!block) block = -1
+    console.log(`addresses/${prefix}/${address}/${block}`)
+    return api().get(`addresses/${prefix}/${address}/${block}`)
   }
 }
