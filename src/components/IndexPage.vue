@@ -125,16 +125,16 @@ align-self: center;
   align-self: center;
 }
 
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 3px;
-}
+
 
 .node text {
   font: 12px sans-serif;
 }
 
+._id:hover {
+  fill: blue;
+  text-decoration: underline;
+}
 
 .zoom{
   cursor: grab;
@@ -164,8 +164,7 @@ align-self: center;
 
   rx: 4;
   ry: 4;
-  stroke-opacity: 0;
-  
+
    }
 
 .shadow {
