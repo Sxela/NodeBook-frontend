@@ -2,7 +2,7 @@
 <div>
     <svg class="svg">
     </svg>
-    <InputForm class="form" v-model="input_val" v-on:explore-go="update()"></InputForm>   
+    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
 </div>
 
 </template>
@@ -56,7 +56,7 @@ export default {
   width:100%;
 }
 
-.form{
+.form_address{
   margin-top: 35px;
 }
 

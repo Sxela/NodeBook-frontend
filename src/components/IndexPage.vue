@@ -7,7 +7,7 @@
     <div class="alpha">v1.0.0-alpha*</div>
     <div class="header">NodeLink</div>
     <div class="lead">Visual Blockchain Explorer</div>
-    <InputForm class="form" v-model="input_val"></InputForm>   
+    <InputForm class="form_index" v-model="input_val"></InputForm>   
     <div class="description">
       <div>
         <div class="sub-header">Explore Connections</div>
@@ -41,7 +41,7 @@ export default {
 </script>
 <style>
 
-.form {
+.form_index {
   margin-top: 135px;
 }
 
