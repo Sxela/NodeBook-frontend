@@ -1,8 +1,11 @@
 import axios from 'axios'
 export default () => {
-  return axios.create({
-  //  baseURL: 'http://localhost:8081'
-  baseURL: 'https://api1.nodel.ink/'
 
+  var prod = true; //use false for staging
+  var URL;
+  URL = prod ? 'https://api.nodel.ink:8081' : 'http://localhost:8081'
+  
+  return axios.create({
+    baseURL : URL
   })
 }

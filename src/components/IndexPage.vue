@@ -1,215 +1,111 @@
-<template lang="pug">
-<div>
-    <svg>
-    </svg>
-    <div class="container" id="button1">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1">#</span>
-            </div>
-            <input type="text" class="form-control" v-model="input_val" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-            <button class="btn btn-primary" v-on:click="update()">Get connections</button>
-        </div>
-    <div>
-  
-    <span v-if="(txes.total_out && total_out[0])">Address {{txes.total_out[0]._id}} has {{txes.total_out[0].links}} outgoing links with a total value of {{Math.round(txes.total_out[0].value/1000000000000000000*100)/100}} ETH</span>
-    <span v-if="(total_in && total_in[0])">and {{txes.total_in[0].links}} incoming links with a total value of {{Math.round(txes.total_in[0].value/1000000000000000000*100)/100}} ETH</span>
+<template>
+<div class="IndexPage">
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,600,700,700i,900" rel="stylesheet">
+  </head>
+  <div class="main-page">
+    <div class="alpha">v1.0.0-alpha*</div>
+    <div class="header">NodeLink</div>
+    <div class="lead">Visual Blockchain Explorer</div>
+    <InputForm class="form" v-model="input_val"></InputForm>   
+    <div class="description">
+      <div>
+        <div class="sub-header">Explore Connections</div>
+        <div class="text">Check if a guy is from a bad neighborhood and is messing with phishing or gambling.</div>
+      </div>
+      <div>
+        <div class="sub-header">Inspect the Cashflow</div>
+        <div class="text">Take a look at income sources and expenditures of any address.</div>
+      </div>
     </div>
-    </div>
-    <div class="container" id="table1">
-    table.table.table-striped
-        thead.thead-dark
-            tr
-              th Address
-              th Number of txes out
-              th Sum
-        tbody
-            tr( v-for="tx in txes.tx_out")
-            
-              td {{ tx._id }}
-              td {{ tx.Txes }}
-              td {{ Math.round(tx.value/1000000000000000000*100)/100 }}
-              td
-        thead.thead-dark     
-            tr
-              th Address
-              th Number of txes in
-              th Sum
-        tbody
-            tr( v-for="tx in txes.tx_in")
-              td {{ tx._id }}
-              td {{ tx.Txes }}
-              td {{ Math.round(tx.value/1000000000000000000*100)/100 }}
-              td
-        
-    </div>
-    
+  </div>
 </div>
+
 </template>
 <script>
-import * as d3 from 'd3';
-import { makeTree } from '@/functions/makeTree';
+import InputForm from '@/components/InputForm'
 
 export default {
   
     name: 'index',
-    components: {
-    
-    },
     data ()
     {
         return {
-            txes:{},
-            input_val : '0xadB2B42F6bD96F5c65920b9ac88619DcE4166f94',
-            //input_val : '0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE',
-            tree: {
-                name: '',
-                children: []
-            },
-            total_out: {},
-            total_in: {}
-            
+          input_val : '0xD9a67CA12D7A22A8330e55FC704C5FcEB9a24E30'
         }
     },
-    methods: { 
-      
-      update() {
-        d3.selectAll('svg').selectAll("g").remove()
-        makeTree(this, this.input_val)
-      }, 
-
-      update(body, address) {
-        if (!body) body = this
-        if (address) body.input_val = address;
-        d3.selectAll('svg').selectAll("g").remove()
-        makeTree(body, body.input_val)
-      } 
-
-    },
-    mounted () {
-        makeTree(this, this.input_val)
+    components:{
+      InputForm
     }
-    
 }
 </script>
 <style>
-.treeclass{
-    font-family: 'Courier', Helvetica, Arial, sans-serif;
-max-height: 100%;
-height: 600px;
-width: 1000px;
-align-self: center;
+
+.form {
+  margin-top: 135px;
 }
-#table1 {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+
+.IndexPage {
+  position: absolute;
+  background: #F1F1F1;
+  padding: 120px;
+  font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: left;
   color: #000000;
-  margin-top: 120px;
-  margin-left: 200px;
-  width: 1024px;
-  font-size: 8;
-  align-self: center;
-}
-#button1 {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: left;
-  font-size: 6;
-  color: #000000;
-  margin-top: 120px;
-  margin-left: 200px;
-  width: 1024px;
-  align-self: center;
-}
-
-
-
-.node text {
-  font: 12px sans-serif;
-}
-
-._id:hover {
-  fill: blue;
-  text-decoration: underline;
-}
-
-.zoom{
-  cursor: grab;
-  fill: none;
-  pointer-events: all;
-  
-}
-
-.graph {
-  margin-top: 120px;
-  margin-left: 200px;
-}
-
-.node_rect_bg
-{
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  rx: 4;
-  ry: 4;
-  
-}
-
-.popup {
-  width: 300;
-  height: 100;
-  
-  fill: #F2F9FE;
-
-  rx: 4;
-  ry: 4;
-
-   }
-
-.shadow {
-fill: rgb(83, 99, 110);
-opacity : 0.2;
-}
-
-
-.node_rect_link
-{
-  fill: #FFD66E;
-  rx: 4;
-  ry: 4;
-  stroke-opacity: 0;
-  
-}
-
-.gLink
-{
-  stroke-opacity: 0.5;
-  stroke: #B1CBDE;
-}
-
-.gNode
-{
-  font-family: Roboto;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 300;
   line-height: normal;
-  font-size: 12px;
-  
-
-color: #000000;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
 }
 
-.tx_in_ratio
-{
-  font-size: 8px;
+.main-page {
+  max-width: 1000px;
+  height: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+  padding: 125px;
 }
 
-
-.gdupLink{
-  fill: none;
-  stroke: orange;
-  opacity: 0.5;
-  
+.alpha{
+  font-weight: normal;
+  font-size: 11px;
+  color: #858585;
 }
+
+.header{
+  font-size: 64px;
+  margin-top: -7px;
+  font-weight: 100;
+  margin-left: -7px;
+}
+
+.lead{
+  font-size: 36px;
+  margin-top: 10px;
+}
+
+.description{
+  display: flex;
+  justify-content:left;
+}
+
+.sub-header {
+  font-size: 24px;
+  font-weight: normal;
+  margin-top: 98px;
+  width: 425px;
+}
+
+.text {
+  font-size: 18px;
+  margin-top: 20px;
+  max-width: 300px;
+}
+
 </style>

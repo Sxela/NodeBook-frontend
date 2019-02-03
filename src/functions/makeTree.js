@@ -6,9 +6,9 @@ import { update_links } from '@/functions/update_links';
 
 export async function makeTree (body, address) {
 
+  d3.selectAll('svg').selectAll("g").remove()
   var width = window.innerWidth
-
-  const height = (window.innerHeight)*0.7
+  const height = (window.innerHeight) - 120;
 
     async function getData(address, direction, block)  {
       if (!block && !direction) {
@@ -21,44 +21,29 @@ export async function makeTree (body, address) {
         return response.data 
         }
     }
- 
-    
+
     var margin = ({top: 50, right: 300, bottom: 50, left: 450})
     var dx = 25 //10
     var dy = 460 //280
     var size = 300
 
-    function my(s, d) {
-
-      var path = `M ${s.y} ${s.x}
-              C ${(s.y + d.y) / 2} ${s.x},
-                ${(s.y + d.y) / 2} ${d.x},
-                ${d.y} ${d.x}`
-
-      return path
-    }
-    
     var diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x)
     var vertical = d3.linkVertical().x(d => d.y).y(d => d.x)
-    var tree = d3.tree().nodeSize([dx, dy])
 
     //pan&zoom------------------------------------------------------------------------------
       
-
     var zoom = d3.zoom()
     .on("zoom", zoomFunction);
 
-function zoomFunction(){
-  //svg.attr("transform", d3.event.transform)  
+function zoomFunction(){ 
   let x = d3.event.transform.x + width/2
   let y = d3.event.transform.y + height/2
   let k = d3.event.transform.k
   svg.attr("transform", 'translate('+x+','+ y +') scale('+k+','+k+')')  
-
 };
 
 const svgView = d3.select("svg")
-  .attr("width", width)
+//  .attr("width", width)
   .attr("height", height)
   .style("font", "10px courier")
   .style("user-select", "none")
@@ -71,7 +56,7 @@ const svg = innerSpace.append("g")
 
 var view = innerSpace.append("rect").lower()
     .attr("class", "zoom")
-    .attr("width", width)
+//    .attr("width", width)
     .attr("height", height)
     .call(zoom)
 
@@ -97,16 +82,12 @@ const gPopup = svg.append("g")
 
 const duration = d3.event && d3.event.altKey ? 2500 : 250;
 
-
-
-
- 
     async function addN(selected, item){
       var newNode = {
         _id: item._id,
         children: [],
       };
-      
+
       if (selected.children && selected.children.findIndex(d => d.data._id == item._id) != -1) {}
       else {
       
@@ -160,7 +141,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
         selected.children = [];
         selected.data.children = [];
       }
-      
       
         selected.children.push(newNode);
         selected.data.children.push(newNode.data);
@@ -244,7 +224,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
     root_in.descendants().forEach((d, i) => {
         d.id = i
       });  
-        
+    
 //taking address as an argument, looking through all the tree data for duplicates. when duplicate found, return it 
       async function dupe(item, type) {
         let result = 0;
@@ -273,7 +253,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
       } 
 
     function update(node)
-    {  
+    {
       if (node.data.type == 'out') update_out(node); else update_in(node);
     }
 
@@ -297,7 +277,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
       for (let key in input_data){
         data.push({a: key, b: input_data[key]})
       }
-
       const popup = gPopup.selectAll("g")
           .data(data)
 
@@ -342,7 +321,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
     }
      //onclick function -----------------------------------------------------------
 
-
      async function onClick(d, g) {
               mouseout(d);
               console.log(d)
@@ -350,13 +328,11 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
               if (d.children || d.dupes) {
                   d._children = d.children; d._dupes = d.dupes;
                   d.children = null; d.dupes = null;
-
                     g.selectAll("rect")
                       .attr("fill-opacity", 1)
                 } 
               else {
                   d.children = d._children; d.dupes = d._dupes;
-
                   console.log(g)
                     g.selectAll("rect")
                       .attr("fill-opacity", 0)
@@ -371,7 +347,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
                         d.dupes.push(dupe1)
                         update(d)
                       }
-                      else 
+                      else  //no dupe checking as all the flow is time-based, so no infinite loops will happen
                       {
                         addN(d,item)}
                     })                 
@@ -437,23 +413,18 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
       })
       
       // Compute the new tree layout.
-      //tree(root);
-      
+
       my_tree(root_in, dx, dy, size)
       root_in.descendants().forEach(d=>{
         d.y = -d.y-dy/2.0-60;
         
       })
-      
-      
 
       const transition = svg.transition()
           .duration(duration)
 
-      update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
+          update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
       update_links(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
-
-      
 
       // Stash the old positions for transition.
       root_in.eachBefore(d => {

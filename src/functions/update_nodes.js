@@ -5,9 +5,6 @@ export function update_nodes(source, gNode, nodes, dx, dy, transition, onClick, 
 
 if (source.data.type == 'out')
 {
- //const transition = svg.transition()
- // const transition = gNode.transition()
- //     .duration(duration)
 
   // Update the nodes…
   const node = gNode.selectAll("g.g_out")
@@ -86,7 +83,10 @@ if (source.data.type == 'out')
       })
 
   const nodeEnter_node = nodeEnter.append("g")
-      .on("click", d => body.update(body, d.data._id))
+        .on("click", d => {
+            body.$router.push(d.data._id)
+            body.update(body, d.data._id)
+        })
       .on("mouseover", d=> 
         {
           setTimeout(mouseover(d),3000)
@@ -108,8 +108,6 @@ if (source.data.type == 'out')
         if (d.data.alias != null){ return d.data.alias} else 
       { return `[${d.data._id.substr(0,7)}..${d.data._id.substr(-7,7)}]`}
       })
-
-   
 
   // Transition nodes to their new position.
   const nodeUpdate = node.merge(nodeEnter).transition(transition)
@@ -208,7 +206,10 @@ else
       }) 
 
   const nodeEnter_in_node = nodeEnter_in.append("g")
-      .on("click", d => body.update(body, d.data._id))
+        .on("click", d => {
+            body.$router.push(d.data._id)
+            body.update(body, d.data._id)
+        })
       .on("mouseover", d=> 
         {
           setTimeout(mouseover(d),3000)
