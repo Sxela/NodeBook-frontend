@@ -36,7 +36,7 @@ export async function makeTree (body, address) {
     .on("zoom", zoomFunction);
 
 function zoomFunction(){ 
-  let x = d3.event.transform.x + width/2
+  let x = d3.event.transform.x + width/2+dy/4
   let y = d3.event.transform.y + height/2
   let k = d3.event.transform.k
   svg.attr("transform", 'translate('+x+','+ y +') scale('+k+','+k+')')  
@@ -44,7 +44,7 @@ function zoomFunction(){
 
 const svgView = d3.select("svg")
 //  .attr("width", width)
-  .attr("height", height)
+//  .attr("height", height)
   .style("font", "10px courier")
   .style("user-select", "none")
 
@@ -61,7 +61,7 @@ var view = innerSpace.append("rect").lower()
     .call(zoom)
 
 
-svg.attr("transform", `translate(${width/2},${height/2})`)
+svg.attr("transform", `translate(${width/2+dy/4},${height/2})`)
 
 //pan&zoom------------------------------------------------------------------------
 
@@ -166,11 +166,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
     }
 
   const nodedata =  await getData(address)
-  //set main page data
-  body.tree.name = body.input_val;
-  body.txes = nodedata
-  body.total_out = body.txes.total_out
-  body.total_in = body.txes.total_in
  
   var newNode_out = {
     _id: address,
@@ -382,7 +377,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
 
       const transition = svg.transition()
         .duration(duration)
-
+      
       update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
       update_links(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
 
@@ -423,7 +418,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
       const transition = svg.transition()
           .duration(duration)
 
-          update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
+      update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
       update_links(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
 
       // Stash the old positions for transition.
@@ -432,10 +427,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
         d.y0 = d.y;
       });
     }
-
     update(root_out);
     update(root_in);
-    console.log(root_out)
-    console.log(root_in)
-    
 }
