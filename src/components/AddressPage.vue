@@ -1,6 +1,6 @@
 <template lang="pug">
 <div>
-<InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
+    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
     <svg class="svg">
     </svg>
     

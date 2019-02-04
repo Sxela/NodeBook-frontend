@@ -60,7 +60,6 @@ export default {
   right: 0px;
   height: 100vh;
   top: 0px;
-  
 }
 
 .main-page {
