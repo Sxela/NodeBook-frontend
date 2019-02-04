@@ -1,8 +1,9 @@
 <template lang="pug">
 <div>
+    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
     <svg class="svg">
     </svg>
-    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
+    
 </div>
 
 </template>
@@ -20,14 +21,7 @@ export default {
     data ()
     {
         return {
-            txes:{},
             input_val : this.id,
-            tree: {
-                name: '',
-                children: []
-            },
-            total_out: {},
-            total_in: {}
         }
     },
     props: {
@@ -53,11 +47,14 @@ export default {
 </script>
 <style>
 .svg{
-  width:100%;
+  height: calc(100vh - 112px);
+  width: 100%;
+  border: 1px solid #d8d8d8;
 }
 
 .form_address{
   margin-top: 35px;
+  margin-bottom: 10px;
 }
 
 .node text {
@@ -74,6 +71,7 @@ export default {
   fill: none;
   pointer-events: all;
   width: 100%;
+  height: calc(100vh - 112px);
 }
 
 .graph {

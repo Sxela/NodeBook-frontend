@@ -58,7 +58,7 @@ export default {
   line-height: normal;
   left: 0px;
   right: 0px;
-  bottom: 0px;
+  height: 100vh;
   top: 0px;
 }
 
