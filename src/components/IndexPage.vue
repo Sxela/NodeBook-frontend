@@ -6,7 +6,7 @@
   <div class="main-page">
     <div class="alpha">v1.0.0-alpha*</div>
     <div class="header">NodeLink</div>
-    <div class="lead">Visual Blockchain Explorer</div>
+    <div class="leadtext">Visual Blockchain Explorer</div>
     <InputForm class="form_index" v-model="input_val"></InputForm>   
     <div class="description">
       <div>
@@ -88,7 +88,7 @@ body {
   margin-left: -7px;
 }
 
-.lead{
+.leadtext{
   font-size: 36px;
   margin-top: 10px;
 }
