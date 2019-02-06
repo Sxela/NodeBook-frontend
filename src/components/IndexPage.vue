@@ -40,6 +40,9 @@ export default {
 }
 </script>
 <style>
+body {
+  height: 100%;
+}
 
 .form_index {
   margin-top: 135px;
@@ -59,6 +62,7 @@ export default {
   left: 0px;
   right: 0px;
   top: 0px;
+  height: 100%;
 }
 
 .main-page {
