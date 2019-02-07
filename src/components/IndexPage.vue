@@ -62,6 +62,7 @@ body {
   left: 0px;
   right: 0px;
   top: 0px;
+  min-height: 1050px;
   height: 100%;
 }
 
