@@ -55,14 +55,32 @@ if (source.data.type == 'out')
       .attr("dy", "0.31em")
       .attr("text-anchor", "end")
       .attr("x", d => d.id==0 ? '-20' : dy/2.0-20)
-      .text(d => d.data.tx_out ? `${d.data.tx_out}` : '')
+      .text(d => {
+        if (d.data.tx_out)
+        {
+          let tx_out = d.data.tx_out
+          if (tx_out>=1000) tx_out=Math.round(tx_out/1000*10)/10 + 'k'
+          return tx_out
+        }
+        else return ''
+      })
 
   nodeEnter_link.append("text")
       .attr("class", "tx_in")
       .attr("dy", "0.31em")
       .attr("text-anchor", d => d.id==0 ? "end" : "start")
       .attr("x", d => d.id==0 ? '-5' : '5')
-      .text(d => d.id==0 ? '' : `${Math.round((d.data.value_in/1000000000000000000)*100)/100}`)
+      //.text(d => d.id==0 ? '' : `${Math.round((d.data.value_in/1000000000000000000)*100)/100}`)
+      .text(d => {
+        if (d.id!=0)
+        {
+          let value_in = Math.round((d.data.value_in/1000000000000000000)*100)/100
+          if (value_in>=1000) value_in=Math.round(value_in/1000*10)/10 + 'k'
+          return value_in
+        }
+        else return ''
+      })
+
 
 
   nodeEnter_link.append("text")
@@ -98,7 +116,7 @@ if (source.data.type == 'out')
         }
       )
 
-  nodeEnter_node.append("text")
+  nodeEnter_node.append("text") //address/alias
       .attr("class", "_id")
       .attr("dy", "0.31em")
       .attr("x", d => d.id==0 ? -dy/4.0-5 : dy/4.0-5)
@@ -175,10 +193,19 @@ else
   nodeEnter_in_link.append("text")
       .attr("class", "tx_out")
       .attr("dy", "0.31em")
-      .attr("text-anchor", d => d.id==0 ? "end" :"start" )
+      .attr("text-anchor", "start")
       
-      .attr("x", d => d.id==0 ? '45' : -dy/2.0+25)
-      .text(d => d.data.tx_in ? `${d.data.tx_in}` : '')
+      .attr("x", d => d.id==0 ? '20' : -dy/2.0+20)
+      //.text(d => d.data.tx_in ? `${d.data.tx_in}` : '')
+      .text(d => {
+        if (d.data.tx_in)
+        {
+          let tx_in = d.data.tx_in
+          if (tx_in>=1000) tx_in=Math.round(tx_in/1000*10)/10 + 'k'
+          return tx_in
+        }
+        else return ''
+      })
 
 
   nodeEnter_in_link.append("text")
@@ -186,7 +213,16 @@ else
       .attr("dy", "0.31em")
       .attr("text-anchor", d => d.id==0 ? "start" : "end")
       .attr("x", d => d.id==0 ? '-20' : -5)
-      .text(d => d.id==0 ? '' : `${Math.round((d.data.value_out/1000000000000000000)*100)/100}`)
+      //.text(d => d.id==0 ? '' : `${Math.round((d.data.value_out/1000000000000000000)*100)/100}`)
+      .text(d => {
+        if (d.id!=0)
+        {
+          let value_out = Math.round((d.data.value_out/1000000000000000000)*100)/100
+          if (value_out>=1000) value_out=Math.round(value_out/1000*10)/10 + 'k'
+          return value_out
+        }
+        else return ''
+      })
 
 
   nodeEnter_in_link.append("text")
@@ -221,7 +257,7 @@ else
         }
       )
 
-  nodeEnter_in_node.append("text")
+  nodeEnter_in_node.append("text") //address/alias
       .attr("class", "_id")
       .attr("dy", "0.31em")
       .attr("x", d => d.id==0 ? -dy/4.0-5 : -dy/4.0+5)

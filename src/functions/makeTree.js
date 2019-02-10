@@ -11,13 +11,17 @@ export async function makeTree (body, address) {
   const height = (window.innerHeight) - 120;
 
     async function getData(address, direction, block)  {
+      body.loading = true;
+      
       if (!block && !direction) {
         const response = await dataService.fetchData(address);
+        body.loading = false;
         return response.data 
         }
       else 
       {
         const response = await dataService.fetchData(address, direction, block)
+        body.loading = false;
         return response.data 
         }
     }
@@ -87,7 +91,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
         _id: item._id,
         children: [],
       };
-
+ 
       if (selected.children && selected.children.findIndex(d => d.data._id == item._id) != -1) {}
       else {
       
@@ -152,14 +156,12 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
           root_out.descendants().forEach((d, i) => {
             d.id = i
           });
-          
         }
         else 
         {
           root_in.descendants().forEach((d, i) => {
             d.id = i
           });
-          
         }
         update(selected)
       }
@@ -359,7 +361,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
 
       
       let nodes = root_out.descendants().reverse();
-    
       root_out.sort(function(a, b) { return - b.data.value_in + a.data.value_in; }); //sort by incoming value
       my_tree(root_out, dx, dy, size)
 
@@ -391,7 +392,6 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
     // secondary function 
 
       function update_in(source) {
-
       const duration = d3.event && d3.event.altKey ? 2500 : 250;
       let nodes = root_in.descendants().reverse();
       root_in.sort(function(a, b) { return - b.data.value_out + a.data.value_out; }); //sort by incoming value
