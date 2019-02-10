@@ -6,7 +6,7 @@
   <div class="main-page">
     <div class="alpha">v1.0.0-alpha*</div>
     <div class="header">NodeLink</div>
-    <div class="lead">Visual Blockchain Explorer</div>
+    <div class="leadtext">Visual Blockchain Explorer</div>
     <InputForm class="form_index" v-model="input_val"></InputForm>   
     <div class="description">
       <div>
@@ -41,8 +41,12 @@ export default {
 </script>
 <style>
 
+body {
+  height:100%;
+}
+
 .form_index {
-  margin-top: 135px;
+  margin-top: 110px;
 }
 
 .IndexPage {
@@ -58,7 +62,7 @@ export default {
   line-height: normal;
   left: 0px;
   right: 0px;
-  height: 100vh;
+  height: 100%;
   top: 0px;
 }
 
@@ -85,21 +89,23 @@ export default {
   margin-left: -7px;
 }
 
-.lead{
+.leadtext{
   font-size: 36px;
   margin-top: 10px;
 }
 
 .description{
   display: flex;
-  justify-content:left;
+  margin-top: 98px;
+  top: 0;
 }
 
 .sub-header {
   font-size: 24px;
   font-weight: normal;
-  margin-top: 98px;
+  
   width: 425px;
+
 }
 
 .text {

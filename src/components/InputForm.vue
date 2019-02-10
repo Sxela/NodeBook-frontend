@@ -1,8 +1,9 @@
 <template>
     <div class="InputForm">
+        <div class="error_report">{{ report }}</div>
         <div class="input-group">
             <input type="text" class="address-form" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" :placeholder="value">
-            <router-link :to="value" ><button class="address-button"  v-on:click="$emit('explore-go')">Explore</button></router-link>
+            <button class="address-button" @click="goto()">Explore</button>
         </div> 
         <div class="button-subscript">*alpha is limited to blocks 3`000`000 to 5`000`000, ETH direct transfers only</div>
     </div>
@@ -14,10 +15,42 @@ export default {
         type: String,
         default: '0xD9a67CA12D7A22A8330e55FC704C5FcEB9a24E30'
     }
+  },
+  data(){
+    return {
+      report: ''
+      }
+  },
+  methods:{
+    goto(){
+      var eth_address_regexp = new RegExp("^0x[a-fA-F0-9]{40}$"); //check the input to be a valid eth address
+      if (eth_address_regexp.test(this.value))
+      {
+        this.$router.push(this.value);
+        this.$emit('explore-go');
+        this.report = '';
+      }
+      else
+      {
+        this.report ='Please enter a valid ETH address!'
+      }
+    }
   }
 }
 </script>
 <style>
+.input-group{
+  min-height: 24px;
+  margin-top: 10px;
+}
+
+.error_report{
+  text-anchor: middle;
+  text-align: center;
+  height: 14px;
+  margin-top: 10px;
+}
+
 .InputForm{
   max-width: 750px;
   margin-left: auto;
