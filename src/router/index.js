@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import index from '@/components/IndexPage'
-import address from '@/components/AddressPage'
+import address_page from '@/components/AddressPage'
 
 Vue.use(Router)
 
@@ -10,8 +10,8 @@ export default new Router({
   routes: [
     {
       path: '/:id', 
-      component: address, 
-      name: 'address',
+      component: address_page, 
+      name: 'address_page',
       props: true
     },
     {
