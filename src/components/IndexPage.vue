@@ -44,8 +44,12 @@ body {
   height: 100%;
 }
 
+body {
+  height:100%;
+}
+
 .form_index {
-  margin-top: 135px;
+  margin-top: 110px;
 }
 
 .IndexPage {
@@ -96,14 +100,16 @@ body {
 
 .description{
   display: flex;
-  justify-content:left;
+  margin-top: 98px;
+  top: 0;
 }
 
 .sub-header {
   font-size: 24px;
   font-weight: normal;
-  margin-top: 98px;
+  
   width: 425px;
+
 }
 
 .text {

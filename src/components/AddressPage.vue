@@ -53,7 +53,7 @@ export default {
 }
 
 .form_address{
-  margin-top: 35px;
+  margin-top: 25px;
   margin-bottom: 10px;
 }
 
