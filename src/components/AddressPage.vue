@@ -1,8 +1,11 @@
 <template lang="pug">
 <div>
-    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm>   
-    <svg class="svg">
-    </svg>
+    <div v-if=loading class="spinner">
+      <self-building-square-spinner :animation-duration="6000" :size="80" color="#FFD66E"/>
+    </div>
+    <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm> 
+    <svg class="svg"></svg>
+    
     
 </div>
 
@@ -10,18 +13,21 @@
 <script>
 import * as d3 from 'd3';
 import { makeTree } from '@/functions/makeTree';
-import InputForm from '@/components/InputForm'
+import InputForm from '@/components/InputForm';
+import { SelfBuildingSquareSpinner  } from 'epic-spinners'
 
 export default {
   
     name: 'address',
     components:{
-      InputForm
+      InputForm,
+      SelfBuildingSquareSpinner
     },
     data ()
     {
         return {
             input_val : this.id,
+            loading: true
         }
     },
     props: {
@@ -46,6 +52,12 @@ export default {
 }
 </script>
 <style>
+.spinner{
+  position: fixed;
+  top: calc(50% - 40px);
+  right: calc(50% - 40px);
+}
+
 .svg{
   height: calc(100vh - 112px);
   width: 100%;
