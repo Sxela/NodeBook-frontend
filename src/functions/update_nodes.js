@@ -56,7 +56,7 @@ if (source.data.type == 'out')
       .attr("text-anchor", "end")
       .attr("x", d => d.id==0 ? '-20' : dy/2.0-20)
       .text(d => {
-        if (d.data.tx_out)
+        if (d.data.tx_out>0)
         {
           let tx_out = d.data.tx_out
           if (tx_out>=1000) tx_out=Math.round(tx_out/1000*10)/10 + 'k'
@@ -198,7 +198,7 @@ else
       .attr("x", d => d.id==0 ? '20' : -dy/2.0+20)
       //.text(d => d.data.tx_in ? `${d.data.tx_in}` : '')
       .text(d => {
-        if (d.data.tx_in)
+        if (d.data.tx_in>0)
         {
           let tx_in = d.data.tx_in
           if (tx_in>=1000) tx_in=Math.round(tx_in/1000*10)/10 + 'k'
