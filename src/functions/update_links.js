@@ -17,7 +17,6 @@ const link = gLink.selectAll("path.path_out")
 const linkEnter = link.enter().append("path")
   .attr("class", "path_out")
   .attr("stroke-width", d => Math.max(d.target.data.size, 0.3))
-  .on("mouseover", d=> console.log(d.target.data.size))
   .attr("d", d => {
     const o = {x: (source.x0), y: source.y0+dy/2.0};
     return diagonal({source: o, target: o}); 
@@ -125,9 +124,7 @@ else
 
   // Update the links…
   const duplink_in = gdupLink.selectAll("path.dup_path_in")
-  //  .data(duplinks_in, d=> d.target.id)
     .data(duplinks, d=> d.target.id+10000*d.source.id)
-  // .attr("stroke-width", d => d.target.id+1)
 
   // Enter any new links at the parent's previous position.
   const duplinkEnter_in = duplink_in.enter().append("path")

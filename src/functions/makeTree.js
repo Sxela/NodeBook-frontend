@@ -2,7 +2,7 @@ import dataService from '@/services/fetchData';
 import * as d3 from 'd3';
 import my_tree from '@/functions/layout';
 import { update_nodes } from '@/functions/update_nodes';
-import { update_links } from '@/functions/update_links';
+import { update_links_simple } from '@/functions/update_links_simple';
 
 export async function makeTree (body, address) {
 
@@ -12,7 +12,7 @@ export async function makeTree (body, address) {
 
     async function getData(address, direction, block)  {
       body.loading = true;
-      
+
       if (!block && !direction) {
         const response = await dataService.fetchData(address);
         body.loading = false;
@@ -47,8 +47,6 @@ function zoomFunction(){
 };
 
 const svgView = d3.select("svg")
-//  .attr("width", width)
-//  .attr("height", height)
   .style("font", "10px courier")
   .style("user-select", "none")
 
@@ -60,7 +58,6 @@ const svg = innerSpace.append("g")
 
 var view = innerSpace.append("rect").lower()
     .attr("class", "zoom")
-//    .attr("width", width)
     .attr("height", height)
     .call(zoom)
 
@@ -337,16 +334,8 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
                   if (d._children == null && d.children == null && d.dupes == null && d._dupes == null){
                     d.data.children.forEach(async item =>  {
 
-                      let dupe1 = await dupe(item, d.data.type)
-                      if (dupe1!=0) 
-                      {
-                        if (!d.dupes) d.dupes = [];
-                        d.dupes.push(dupe1)
-                        update(d)
-                      }
-                      else  //no dupe checking as all the flow is time-based, so no infinite loops will happen
-                      {
-                        addN(d,item)}
+                        addN(d,item)
+
                     })                 
                   }
                   d._children = null; d._dupes = null
@@ -380,7 +369,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
         .duration(duration)
       
       update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
-      update_links(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
+      update_links_simple(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
 
       // Stash the old positions for transition.
       root_out.eachBefore(d => {
@@ -419,7 +408,7 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
           .duration(duration)
 
       update_nodes(source, gNode, nodes, dx, dy, transition, onClick, mouseover, mouseout, body)
-      update_links(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
+      update_links_simple(source, gLink, gdupLink, links, duplinks, dx, dy, transition)
 
       // Stash the old positions for transition.
       root_in.eachBefore(d => {
