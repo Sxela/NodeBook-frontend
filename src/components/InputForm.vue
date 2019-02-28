@@ -5,7 +5,7 @@
             <input type="text" class="address-form" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" :placeholder="value">
             <button class="address-button" @click="goto()">Explore</button>
         </div> 
-        <div class="button-subscript">*alpha is limited to blocks 3`000`000 to 5`000`000, ETH direct transfers only</div>
+        <div class="button-subscript">*alpha is limited to 1`000`000 latest blocks, ETH direct transfers only</div>
     </div>
 </template>
 <script>
@@ -13,7 +13,7 @@ export default {
   props: {
     value:{
         type: String,
-        default: '0xD9a67CA12D7A22A8330e55FC704C5FcEB9a24E30'
+        default: '0x7EF35bb398E0416b81b019fEa395219B65c52164'
     }
   },
   data(){
