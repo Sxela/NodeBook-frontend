@@ -31,7 +31,7 @@ export default {
     data ()
     {
         return {
-          input_val : '0xD9a67CA12D7A22A8330e55FC704C5FcEB9a24E30'
+          input_val : '0x7EF35bb398E0416b81b019fEa395219B65c52164'
         }
     },
     components:{
