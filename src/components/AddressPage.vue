@@ -1,16 +1,30 @@
 <template lang="pug">
 <div>
+    <Modal v-if="show_modal" @close="show_modal = false"/>
     <div v-if=loading class="spinner">
       <self-building-square-spinner :animation-duration="6000" :size="80" color="#FFD66E"/>
     </div>
     <InputForm class="form_address" v-model="input_val" v-on:explore-go="update()"></InputForm> 
-    <svg class="svg"></svg>
+    <svg class="svg">     
+    <filter id="dropshadow" height="130%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/> <!-- stdDeviation is how much to blur -->
+      <feOffset dx="2" dy="2" result="offsetblur"/> <!-- how much to offset -->
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2"/> <!-- slope is the opacity of the shadow -->
+      </feComponentTransfer>
+      <feMerge> 
+        <feMergeNode/> <!-- this contains the offset blurred image -->
+        <feMergeNode in="SourceGraphic"/> <!-- this contains the element that the filter is applied to -->
+      </feMerge>
+    </filter>
+    </svg>
     
     
 </div>
 
 </template>
 <script>
+import Modal from '@/components/Modal';
 import * as d3 from 'd3';
 import { makeTree } from '@/functions/makeTree';
 import InputForm from '@/components/InputForm';
@@ -21,13 +35,15 @@ export default {
     name: 'address',
     components:{
       InputForm,
-      SelfBuildingSquareSpinner
+      SelfBuildingSquareSpinner,
+      Modal
     },
     data ()
     {
         return {
             input_val : this.id,
-            loading: true
+            loading: true,
+            show_modal: true
         }
     },
     props: {
@@ -101,8 +117,8 @@ export default {
   width: 300;
   height: 100;
   fill: #F2F9FE;
-  rx: 4;
-  ry: 4;
+  rx: 0;
+  ry: 0;
    }
 
 .shadow {

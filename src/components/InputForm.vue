@@ -5,7 +5,7 @@
             <input type="text" class="address-form" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" :placeholder="value">
             <button class="address-button" @click="goto()">Explore</button>
         </div> 
-        <div class="button-subscript">*alpha is limited to 1`000`000 latest blocks, ETH direct transfers only</div>
+        <div class="button-subscript">*alpha is limited to 2`000`000 latest blocks, ETH direct transfers only</div>
     </div>
 </template>
 <script>

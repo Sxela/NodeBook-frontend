@@ -256,49 +256,63 @@ const duration = d3.event && d3.event.altKey ? 2500 : 250;
       gPopup.selectAll('*').remove()
       const ddx = 15; //text fields margin
 
-      var input_data = {
+      
+      
 
-        id: d.data._id,
-        alias: d.data.alias,
-        'incoming connections': d.data.tx_in,
-        'incoming ETH' : Math.round(d.data.value_in/1000000000000000000*100)/100,
-        'outgoing transactions': d.data.tx_out,
-        'outgoing ETH' : Math.round(d.data.value_out/1000000000000000000*100)/100,
+      var input_data =[
+        ['id', d.data._id],
+        ['ETH in', Math.round(d.data.value_in/1000000000000000000*100)/100],
+        ['ETH out',Math.round(d.data.value_out/1000000000000000000*100)/100]
+      ]
+      if (d.data.alias) input_data.push(['Alias', d.data.alias]);
 
+      var x,y;
+      
+      x = d.x+50;
+      
+      if (d.data.type == 'in') {
+        input_data.push(['links in', d.data.tx_in]);
+        input_data.push(['txes out', d.data.tx_out]);
+        y = d.y+20;
+        
+      }
+      else {
+        input_data.push(['txes in', d.data.tx_in])
+        input_data.push(['links out', d.data.tx_out])
+        y = d.y+dy/2+20;
       }
 
-      var data = Array({a:'', b:''});
-      for (let key in input_data){
-        data.push({a: key, b: input_data[key]})
-      }
+      if (d.id == 0) y = d.y-50;
+
       const popup = gPopup.selectAll("g")
-          .data(data)
+          .data(input_data)
 
       gPopup.append("rect")
           .attr('class', 'popup')
-          .attr("x", d.y+50)
-          .attr("y", d.x + 50)
-          .attr("width", 600)
-          .attr("height", (data.length+1)*ddx)
+          .attr("x", y)
+          .attr("y", x)
+          .attr("width", 400)
+          .attr("height", (input_data.length+1)*ddx)
           .attr("id", "t" + d.id)
           .style('opacity', 0)
+          .style('filter', 'url(#dropshadow)');
 
       const popupEnter = popup.enter().append("g")
 
       popupEnter.append("text")
           .attr('class', 'gNode')
-          .text(d => d.b )
-          .attr("x",  d.y + 65 +150)
+          .text(d => d[1] )
+          .attr("x",  y +70)
           .attr("text-anchor", "start")
-          .attr("y", (n,i) => 70 +d.x + i*ddx)
+          .attr("y", (n,i) => 20+x + i*ddx)
           .style('opacity', 0)
 
       popupEnter.append("text")
           .attr('class', 'gNode')
-          .text((n,i) => data[i].a + ':')
-          .attr("x",  d.y + 65 + 145)
+          .text((n,i) => input_data[i][0] + ':')
+          .attr("x",  y +60)
           .attr("text-anchor", "end")
-          .attr("y", (n,i) => 70 +d.x + i*ddx)
+          .attr("y", (n,i) => x+20 + i*ddx)
           .style('opacity', 0)
 
       gPopup.selectAll("*").transition()
