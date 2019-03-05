@@ -40,6 +40,7 @@ export default {
 }
 </script>
 <style>
+@media screen and (min-width:0px) {
 body {
   height: 100%;
 }
@@ -49,13 +50,13 @@ body {
 }
 
 .form_index {
-  margin-top: 110px;
+  margin-top: 20px;
 }
 
 .IndexPage {
   position: absolute;
   background: #F1F1F1;
-  padding: 120px;
+  padding: 0px;
   font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -71,13 +72,64 @@ body {
 }
 
 .main-page {
-  max-width: 1000px;
-  height: 800px;
-  margin-left: auto;
-  margin-right: auto;
+  height: 100%;
   background-color: #ffffff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+  padding: 20px;
+}
+
+.alpha{
+  font-weight: normal;
+  font-size: 11px;
+  color: #858585;
+}
+
+.header{
+  font-size: 32px;
+  margin-top: -7px;
+  font-weight: 100;
+  margin-left: -7px;
+}
+
+.leadtext{
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.description{
+  display: float;
+  margin-top: 15px;
+  top: 0;
+}
+
+
+.sub-header {
+  font-size: 18px;
+  font-weight: normal;
+  margin-top: 15px;
+  width: 425px;
+}
+
+.text {
+  font-size: 16px;
+  margin-top: 20px;
+  max-width: 300px;
+}
+}
+@media screen and (min-width:1250px) {
+  .IndexPage {
+  padding: 120px;
+}
+  .main-page { 
+  height: 800px;
+  max-width: 1000px;
   padding: 125px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form_index {
+  margin-top: 110px;
 }
 
 .alpha{
@@ -116,6 +168,7 @@ body {
   font-size: 18px;
   margin-top: 20px;
   max-width: 300px;
+}
 }
 
 </style>
