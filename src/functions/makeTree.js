@@ -52,14 +52,15 @@ const svgView = d3.select("svg")
 
 var innerSpace = svgView.append("g")
     .attr("class", "inner_space")
+    .call(zoom)
 
 const svg = innerSpace.append("g")
     .attr("class", "graph")
-
+    
 var view = innerSpace.append("rect").lower()
     .attr("class", "zoom")
     .attr("height", height)
-    .call(zoom)
+    //.call(zoom)
 
 
 svg.attr("transform", `translate(${width/2+dy/4},${height/2})`)
